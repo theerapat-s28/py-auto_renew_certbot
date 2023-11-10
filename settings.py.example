@@ -1,0 +1,13 @@
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+LOG_FOLDER_PATH = '/home/user/logs/'
+
+HOSTNAMES = [
+  {
+    "name": "www.example.com",
+    "dc_file_path": "/home/user/99-temp/docker-compose.yml"
+  }
+]
