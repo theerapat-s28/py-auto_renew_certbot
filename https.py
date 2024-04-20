@@ -1,9 +1,26 @@
 import socket
 import ssl
 import datetime
+import handle_error
 
-def ssl_expiry_datetime(hostname):
-  ssl_dateformat = r'%b %d %H:%M:%S %Y %Z'
+
+def ssl_days_left(hostname) -> int:
+  '''
+  Return SSL expiry date left of given hostname.
+  '''
+  try:
+    now = datetime.datetime.now()
+    expiry_date = _ssl_expiry_datetime(hostname)
+
+    diff = expiry_date - now
+    return diff.days
+  except:
+    handle_error.get_ssl_date_expiry_error(hostname)
+    raise Exception(f"Error - get expiry date of {hostname} in _ssl_expiry_datetime() error.")
+
+
+def _ssl_expiry_datetime(hostname) -> datetime.datetime:
+  format = r'%b %d %H:%M:%S %Y %Z'
 
   context = ssl.create_default_context()
   context.check_hostname = False
@@ -17,12 +34,4 @@ def ssl_expiry_datetime(hostname):
 
   conn.connect((hostname, 443))
   ssl_info = conn.getpeercert()
-  # Python datetime object
-  return datetime.datetime.strptime(ssl_info['notAfter'], ssl_dateformat)
-
-
-def ssl_days_left(hostname):
-  now = datetime.datetime.now()
-  expiry_date = ssl_expiry_datetime(hostname)
-  diff = expiry_date - now
-  return diff.days
+  return datetime.datetime.strptime(ssl_info['notAfter'], format) # type: ignore
