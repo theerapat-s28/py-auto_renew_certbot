@@ -1,5 +1,5 @@
 # Python modules
-import subprocess, os
+import subprocess, os, time
 
 # Local modules
 import settings
@@ -65,7 +65,7 @@ def renew_docker_certbot(compose_file:str, certbot_service_name:str) -> None:
   command = f"docker-compose -f {compose_file} up --force-recreate --no-deps {certbot_service_name}"
   output = run_command_with_output(command)
 
-  if "certbot exited with code 0" not in output:
+  if "exited with code 0" not in output:
     handle_error.renew_with_dockercompose_error(compose_file)
 
 
@@ -75,21 +75,24 @@ def main():
 
   for hostname in settings.HOSTNAMES:
     name = hostname['name']
-    docker_file = hostname['dc_file_path']
+    cert_dc_file = hostname['cert_dc_file']
     cert_service_name = hostname['certbot_service_name']
+    rvp_dc_file = hostname['rvp_dc_file']
     rvp_service_name = hostname['reverse_proxy_service_name']
 
     # Check SSL days left
     try:
       ssl_days_left = https.ssl_days_left(name)
       if ssl_days_left < 15:
-        renew_docker_certbot(docker_file, cert_service_name)
-        restart_reverse_proxy(docker_file, rvp_service_name)
+        renew_docker_certbot(cert_dc_file, cert_service_name)
+        time.sleep(5)
+        restart_reverse_proxy(rvp_dc_file, rvp_service_name)
+        time.sleep(10)
         ssl_days_left_after = https.ssl_days_left(name)
         if ssl_days_left_after > 80:
           logger.write(success_log_file, f"Successful renew SSL for {name}.")
         else:
-          logger.write(error_log_file, f"Failed attempt on renew SSL for {name}.")
+          logger.write(error_log_file, f"SSL days after renew checking failed for {name}.")
 
     except:
       logger.write(error_log_file, f"Failed attempt on renew SSL for {name}.")

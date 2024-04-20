@@ -16,7 +16,7 @@ def ssl_days_left(hostname) -> int:
     return diff.days
   except:
     handle_error.get_ssl_date_expiry_error(hostname)
-    raise Exception(f"Error - get expiry date of {hostname} in _ssl_expiry_datetime() error.")
+    raise Exception(f"Failed attempt getting expiry date of {hostname} in _ssl_expiry_datetime() error.")
 
 
 def _ssl_expiry_datetime(hostname) -> datetime.datetime:

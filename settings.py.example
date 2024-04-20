@@ -8,14 +8,16 @@ LOG_FOLDER_PATH = '/home/user/project/logs/'
 HOSTNAMES = [
   {
     "name": "www.example.com",
-    "dc_file_path": "/home/user/project/logs/docker-compose-1.yml",
+    "cert_dc_file": "/home/user/project/logs/docker-compose-1.yml",
     "certbot_service_name": "certbot_www",
+    "rvp_dc_file": "/home/user/project/logs/docker-compose-1.yml",
     "reverse_proxy_service_name": "reverse_proxy"
   },
     {
     "name": "api.example.com",
-    "dc_file_path": "/home/user/project/logs/docker-compose-2.yml",
+    "cert_dc_file": "/home/user/project/logs/docker-compose-2.yml",
     "certbot_service_name": "certbot_api",
+    "rvp_dc_file": "/home/user/project/logs/docker-compose-2.yml",
     "reverse_proxy_service_name": "reverse_proxy_2"
   }
 ]
