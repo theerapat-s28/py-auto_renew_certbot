@@ -8,16 +8,23 @@ def ssl_days_left(hostname) -> int:
   '''
   Return SSL expiry date left of given hostname.
   '''
+
   try:
     now = datetime.datetime.now()
     expiry_date = _ssl_expiry_datetime(hostname)
 
     diff = expiry_date - now
     return diff.days
-  except:
+  except ssl.SSLCertVerificationError as e:
+    if 'certificate has expired' in e.strerror:
+      print("@ssl_days_left() - Certificate has expired")
+      return 0
+    else:
+      handle_error.get_ssl_date_expiry_error(hostname)
+      raise Exception(f"Failed attempt getting expiry date of {hostname} in _ssl_expiry_datetime() error.")
+  except Exception:
     handle_error.get_ssl_date_expiry_error(hostname)
     raise Exception(f"Failed attempt getting expiry date of {hostname} in _ssl_expiry_datetime() error.")
-
 
 def _ssl_expiry_datetime(hostname) -> datetime.datetime:
   format = r'%b %d %H:%M:%S %Y %Z'
